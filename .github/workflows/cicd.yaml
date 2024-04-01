@@ -6,6 +6,8 @@ on:
 
 env:
   USE_GKE_GCLOUD_AUTH_PLUGIN: True
+  PROJECT_ID: lyrical-diagram-413314
+  ZONE: us-central1
 
 jobs:
   build:
@@ -61,14 +63,14 @@ jobs:
         run: 'gcloud info'
       
       - name: 'Use gcloud for creds'
-        run: 'gcloud container clusters get-credentials mera-cluster'
+        run: |
+          glcoud config set project $PROJECT_ID
+          gcloud condig set computer/zone $ZONE
+          gcloud container clusters get-credentials mera-cluster  --region us-central1
    
       - name: Apply deployment to GKE
-        uses: google-github-actions/kubectl@v1
-        with:
-          command: apply
-          args: |-
-              -f k8sfiles/website-deployment.yaml
+        run: |
+          kubectl apply -f k8sfiles/website-deployment.yaml
 
   deploy_backend:
     runs-on: ubuntu-latest
