@@ -13,19 +13,19 @@ jobs:
       - name: Login to Docker Hub (replace with your credentials)
         uses: docker/login@v2
         with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
+          username: ${{secrets.DOCKERHUB_USERNAME}}
+          password: ${{secrets.DOCKERHUB_TOKEN}}
 
       # Build front-end and back-end images (replace with specific commands)
       - name: Build Front-End Image
         run: |-
-          docker build -t ${{ secrets.DOCKER_USERNAME }}/ecom-front-end:latest front-end/
-          docker push ${{ secrets.DOCKER_USERNAME }}/ecom-front-end:latest
+          docker build -t ${{secrets.DOCKERHUB_USERNAME}}/ecom-front-end:latest front-end/
+          docker push ${{secrets.DOCKERHUB_USERNAME}}/ecom-front-end:latest
 
       - name: Build Back-End Image
         run: |-
-          docker build -t ${{ secrets.DOCKER_USERNAME }}/ecom-back-end:latest back-end/
-          docker push ${{ secrets.DOCKER_USERNAME }}/ecom-back-end:latest
+          docker build -t ${{secrets.DOCKERHUB_USERNAME}}/ecom-back-end:latest back-end/
+          docker push ${{secrets.DOCKERHUB_USERNAME}}/ecom-back-end:latest
 
       - name: Save Front-End Image Tag
         run: echo "$FRONT_END_TAG=$(docker images -q ecom-front-end:latest)"
@@ -35,7 +35,7 @@ jobs:
       - name: Save Back-End Image Tag
         run: echo "$BACK_END_TAG=$(docker images -q ecom-back-end:latest)"
         env:
-          BACK_END_TAG: ${{ steps.Save_Back_End_Image_Tag.outputs.BACK_END_TAG }}  # Update name accordingly
+          BACK_END_TAG: ${{ steps.Save_Back_End_Image_Tag.outputs.BACKFRONT_END_TAG }}  # Update name accordingly
 
   deploy_frontend:
     runs-on: ubuntu-latest
