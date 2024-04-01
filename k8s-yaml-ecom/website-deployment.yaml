@@ -14,7 +14,7 @@ spec:
       spec:
          containers:
           - name: web-app
-            image: "BE_IMG"
+            image: "ecom-front-end:_FE_IMG_"
             ports:
             - containerPort: 80
             env:
