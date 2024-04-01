@@ -14,7 +14,7 @@ spec:
       spec:
          containers:
           - name: web-app
-            image: "ecom-front-end:_FE_IMG_"
+            image: cloudbabush/ecom-front-end:latest 
             ports:
             - containerPort: 80
             env:
@@ -28,6 +28,3 @@ spec:
                value: ecomdb
              - name: DARK_MODE
                value: "off"
-
-
-   

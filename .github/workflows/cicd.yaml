@@ -46,10 +46,9 @@ jobs:
     runs-on: ubuntu-latest
     needs: build
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v3  #Deleted the sed bit
 
-      - name: Update Front End Deployment YAML
-        run: sed -i "s/_FE_IMG_/${{ env.FRONT_END_TAG }}/" k8s-yaml-ecom/website-deployment.yaml
+   
 
       - id: 'auth'
         uses: 'google-github-actions/auth@v2'
