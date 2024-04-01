@@ -4,6 +4,9 @@ on:
   push:
     branches: [ main ]
 
+env:
+  USE_GKE_GCLOUD_AUTH_PLUGIN: True
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -46,12 +49,20 @@ jobs:
       - name: Update Front End Deployment YAML
         run: sed -i "s/_FE_IMG_/${{ env.FRONT_END_TAG }}/" k8s-yaml-ecom/website-deployment.yaml
 
-      - name: Configure GKE credentials using WIF
-        uses: google-github-actions/get-gke-credentials@v1
+      - id: 'auth'
+        uses: 'google-github-actions/auth@v2'
         with:
-         cluster_name: mera-cluster  # Replace with your cluster name
-         location: us-central1  # Replace with your cluster location
+          credentials_json: '${{secrets.GCP_CREDENTIALS}}'
 
+      - name: 'Set up Cloud SDK'
+        uses: 'google-github-actions/setup-gcloud@v2'
+
+      - name: 'Use gcloud CLI'
+        run: 'gcloud info'
+      
+      - name: 'Use gcloud for creds'
+        run: 'gcloud container clusters get-credentials mera-cluster'
+   
       - name: Apply deployment to GKE
         uses: google-github-actions/kubectl@v1
         with:
