@@ -63,9 +63,7 @@ jobs:
         run: 'gcloud info'
       
       - name: 'Use gcloud for creds'
-        run: |
-          gcloud config set project $PROJECT_ID
-          gcloud condig set computer/zone $ZONE
+        run: |   
           gcloud container clusters get-credentials mera-cluster  --region us-central1
    
       - name: Apply deployment to GKE
