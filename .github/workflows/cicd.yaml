@@ -34,7 +34,7 @@ jobs:
       - uses: actions/checkout@v3
 
       - name: Update Front End Deployment YAML
-        run: sed -i "s/_FE_IMG_/${{ env.FRONT_END_TAG }}/" website-deployment.yaml
+        run: sed -i "s/_FE_IMG_/${{ env.FRONT_END_TAG }}/" k8s-yaml-ecom/website-deployment.yaml
 
 
       - name: Deploy Front-End Service
@@ -47,7 +47,7 @@ jobs:
       - uses: actions/checkout@v3
 
       - name: Update Back-End Deployment YAML
-        run: sed -i "s/_BE_IMG_/${{ env.BACK_END_TAG }}/" db-deployment.yaml
+        run: sed -i "s/_BE_IMG_/${{ env.BACK_END_TAG }}/" k8s-yaml-ecom/db-deployment.yaml
 
       - name: Deploy Back-End Service
         run: kubectl apply -f db-deployment.yaml
