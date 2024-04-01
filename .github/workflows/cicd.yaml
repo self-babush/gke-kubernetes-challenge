@@ -62,13 +62,19 @@ jobs:
       - name: 'Use gcloud CLI'
         run: 'gcloud info'
       
+      - name: 'Use plugin'
+        run: 'gcloud components install gke-gcloud-auth-plugin'
+      
       - name: 'Use gcloud for creds'
         run: |   
           gcloud container clusters get-credentials mera-cluster  --region us-central1
+         
+      - name: 'Print Working Directory'
+        run: pwd
    
       - name: Apply deployment to GKE
         run: |
-          kubectl apply -f k8sfiles/website-deployment.yaml
+          kubectl apply -f k8s-yaml-ecom/website-deployment.yaml
 
   deploy_backend:
     runs-on: ubuntu-latest
