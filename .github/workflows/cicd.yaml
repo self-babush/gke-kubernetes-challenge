@@ -64,7 +64,7 @@ jobs:
       
       - name: 'Use gcloud for creds'
         run: |
-          glcoud config set project $PROJECT_ID
+          gcloud config set project $PROJECT_ID
           gcloud condig set computer/zone $ZONE
           gcloud container clusters get-credentials mera-cluster  --region us-central1
    
