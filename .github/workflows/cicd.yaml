@@ -10,12 +10,22 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
+      - name: Login to Docker Hub (replace with your credentials)
+        uses: docker/login@v2
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
       # Build front-end and back-end images (replace with specific commands)
       - name: Build Front-End Image
-        run: docker build -t ecom-front-end:latest front-end/
+        run: |-
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/ecom-front-end:latest front-end/
+          docker push ${{ secrets.DOCKER_USERNAME }}/ecom-front-end:latest
 
       - name: Build Back-End Image
-        run: docker build -t ecom-back-end:latest back-end/
+        run: |-
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/ecom-back-end:latest back-end/
+          docker push ${{ secrets.DOCKER_USERNAME }}/ecom-back-end:latest
 
       - name: Save Front-End Image Tag
         run: echo "$FRONT_END_TAG=$(docker images -q ecom-front-end:latest)"
@@ -25,7 +35,7 @@ jobs:
       - name: Save Back-End Image Tag
         run: echo "$BACK_END_TAG=$(docker images -q ecom-back-end:latest)"
         env:
-          BACK_END_TAG: ${{ steps.Save_Back_End_Image_Tag.outputs.FRONT_END_TAG }}  # Update name accordingly
+          BACK_END_TAG: ${{ steps.Save_Back_End_Image_Tag.outputs.BACK_END_TAG }}  # Update name accordingly
 
   deploy_frontend:
     runs-on: ubuntu-latest
@@ -36,9 +46,18 @@ jobs:
       - name: Update Front End Deployment YAML
         run: sed -i "s/_FE_IMG_/${{ env.FRONT_END_TAG }}/" k8s-yaml-ecom/website-deployment.yaml
 
+      - name: Configure GKE credentials using WIF
+        uses: google-github-actions/get-gke-credentials@v1
+        with:
+         cluster_name: mera-cluster  # Replace with your cluster name
+         location: us-central1  # Replace with your cluster location
 
-      - name: Deploy Front-End Service
-        run: kubectl apply -f website-deployment.yaml
+      - name: Apply deployment to GKE
+        uses: google-github-actions/kubectl@v1
+        with:
+          command: apply
+          args: |-
+              -f k8sfiles/website-deployment.yaml
 
   deploy_backend:
     runs-on: ubuntu-latest
@@ -49,5 +68,15 @@ jobs:
       - name: Update Back-End Deployment YAML
         run: sed -i "s/_BE_IMG_/${{ env.BACK_END_TAG }}/" k8s-yaml-ecom/db-deployment.yaml
 
+      - name: Configure GKE credentials using WIF
+        uses: google-github-actions/get-gke-credentials@v1
+        with:
+         cluster_name: mera-cluster  # Replace with your cluster name
+         location: us-central1  # Replace with your cluster location
+
       - name: Deploy Back-End Service
-        run: kubectl apply -f db-deployment.yaml
+        uses: google-github-actions/kubectl@v1
+        with:
+          command: apply
+          args: |-
+              -f k8sfiles/db-deployment.yaml
