@@ -74,6 +74,7 @@ jobs:
       - name: Apply deployment to GKE
         run: |
           kubectl apply -f k8s-yaml-ecom/website-deployment.yaml
+          kubectl apply -f k8s-yaml-ecom/website-service.yaml
 
   deploy_backend:
     runs-on: ubuntu-latest
@@ -81,18 +82,32 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Update Back-End Deployment YAML
-        run: sed -i "s/_BE_IMG_/${{ env.BACK_END_TAG }}/" k8s-yaml-ecom/db-deployment.yaml
+    
 
-      - name: Configure GKE credentials using WIF
-        uses: google-github-actions/get-gke-credentials@v1
+      - id: 'auth'
+        uses: 'google-github-actions/auth@v2'
         with:
-         cluster_name: mera-cluster  # Replace with your cluster name
-         location: us-central1  # Replace with your cluster location
+          credentials_json: '${{secrets.GCP_CREDENTIALS}}'
 
-      - name: Deploy Back-End Service
-        uses: google-github-actions/kubectl@v1
-        with:
-          command: apply
-          args: |-
-              -f k8sfiles/db-deployment.yaml
+      - name: 'Set up Cloud SDK'
+        uses: 'google-github-actions/setup-gcloud@v2'
+
+      - name: 'Use gcloud CLI'
+        run: 'gcloud info'
+      
+      - name: 'Use plugin'
+        run: 'gcloud components install gke-gcloud-auth-plugin'
+      
+      - name: 'Use gcloud for creds'
+        run: |   
+          gcloud container clusters get-credentials mera-cluster  --region us-central1
+         
+      - name: 'Print Working Directory'
+        run: pwd
+   
+      - name: Apply deployment to GKE
+        run: |
+          kubectl apply -f k8s-yaml-ecom/db-deployment.yaml
+          kubectl apply -f k8s-yaml-ecom/db-service.yaml
+          kubectl apply -f k8s-yaml-ecom/db-secrets.yaml
+          kubectl apply -f k8s-yaml-ecom/db-configmap.yaml

@@ -14,7 +14,7 @@ spec:
     spec:      
       containers:     
       - name: mariadb
-        image: "ecom-front-end:_FE_IMG_"  # Replace with your image name and tag
+        image: cloudbabush/ecom-back-end:latest  # Replace with your image name and tag
         envFrom:
         - secretRef:
             name: db-credentials 
