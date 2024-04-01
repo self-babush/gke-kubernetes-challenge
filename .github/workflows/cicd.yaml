@@ -1,0 +1,53 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      # Build front-end and back-end images (replace with specific commands)
+      - name: Build Front-End Image
+        run: docker build -t my-front-end:latest front-end/
+
+      - name: Build Back-End Image
+        run: docker build -t my-back-end:latest back-end/
+
+      - name: Save Front-End Image Tag
+        run: echo "$FRONT_END_TAG=$(docker images -q ecom-front-end:latest)"
+        env:
+          FRONT_END_TAG: ${{ steps.Save_Front_End_Image_Tag.outputs.FRONT_END_TAG }}
+
+      - name: Save Back-End Image Tag
+        run: echo "$BACK_END_TAG=$(docker images -q ecom-back-end:latest)"
+        env:
+          BACK_END_TAG: ${{ steps.Save_Back_End_Image_Tag.outputs.FRONT_END_TAG }}  # Update name accordingly
+
+  deploy_frontend:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Update Front End Deployment YAML
+        run: sed -i "s/_FE_IMG_/${{ env.FRONT_END_TAG }}/" deployment-frontend.yaml
+
+
+      - name: Deploy Front-End Service
+        run: kubectl apply -f deployment-frontend.yaml
+
+  deploy_backend:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Update Back-End Deployment YAML
+        run: sed -i "s/_BE_IMG_/${{ env.BACK_END_TAG }}/" deployment-frontend.yaml
+
+      - name: Deploy Back-End Service
+        run: kubectl apply -f deployment-backend.yaml

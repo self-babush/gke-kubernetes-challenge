@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: mysql-service  # Name of the service
+spec:
+  selector:
+    app: mariadb  # Selects pods with the label "app: my-app"
+  ports:
+  - protocol: TCP  # Protocol for the service port
+    port: 3306  # Port exposed by the service (external)
+    targetPort: 3306  # Port the pods are listening on (internal)
+  type: ClusterIP  # Service type (LoadBalancer)

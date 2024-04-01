@@ -1,0 +1,33 @@
+apiVersion: apps/v1 
+kind: Deployment
+metadata:
+  name: web-deploy
+spec:
+   replicas: 2
+   selector:
+    matchLabels:
+      app: web-app  # Selector for pods
+   template:
+      metadata:
+        labels:
+         app: web-app    
+      spec:
+         containers:
+          - name: web-app
+            image: "BE_IMG"
+            ports:
+            - containerPort: 80
+            env:
+             - name: DB_USER
+               value: "hero"
+             - name: DB_PASSWORD
+               value: "zero"
+             - name: DB_HOST
+               value: mysql-service
+             - name: DB_NAME
+               value: ecomdb
+             - name: DARK_MODE
+               value: "off"
+
+
+   

@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mariadb-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mariadb
+  template:
+    metadata:
+      labels:
+        app: mariadb
+    spec:      
+      containers:     
+      - name: mariadb
+        image: "ecom-front-end:_FE_IMG_"  # Replace with your image name and tag
+        envFrom:
+        - secretRef:
+            name: db-credentials 
+        env:
+          # Define environment variables directly (simple values)
+          - name: MARIADB_ALLOW_EMPTY_ROOT_PASSWORD
+            value: "0"        
+        ports:
+        - containerPort: 3306
+          name: mariadb     
+        volumeMounts:
+          - mountPath: /docker-entrypoint-initdb.d/
+            name: db-init-script          
+      volumes:
+          - name: db-init-script
+            configMap:
+              name: db-init-load-script
+       
